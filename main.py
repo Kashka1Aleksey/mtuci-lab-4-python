@@ -1,4 +1,5 @@
-﻿import logging
+﻿import json
+import logging
 from pathlib import Path
 
 from utils.statistics import (
@@ -11,22 +12,24 @@ from utils.reader import read_numbers
 
 
 def main():
-    current_dir = Path.cwd()
-    print("Рабочая папка:", current_dir)
-
     project_dir = Path(__file__).resolve().parent
 
-    logs_dir = project_dir / "logs"
-    logs_dir.mkdir(exist_ok=True)
+    config_file = project_dir / "config.json"
+
+    with open(config_file, "r", encoding="utf-8-sig") as file:
+        config = json.load(file)
+
+    input_file = project_dir / config["input_file"]
+    log_file = project_dir / config["log_file"]
+
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
-        filename=logs_dir / "app.log",
+        filename=log_file,
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         encoding="utf-8"
     )
-
-    input_file = project_dir / "data" / "measurements.txt"
 
     logging.info("Программа запущена")
 
